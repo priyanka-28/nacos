@@ -34,6 +34,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -91,9 +92,12 @@ public class JacksonUtilsTest {
                 "[{\"key\":\"value\"}]".getBytes(),
                 JacksonUtils.toJsonBytes(Collections.singletonList(Collections.singletonMap("key", "value")))
         );
+        byte[] a = "{\"aLong\":0,\"aInteger\":1,\"aBoolean\":false}".getBytes();
+        byte[] b = JacksonUtils.toJsonBytes(new TestOfAtomicObject());
+        Arrays.sort(a);
+        Arrays.sort(b);
         Assert.assertArrayEquals(
-                "{\"aLong\":0,\"aInteger\":1,\"aBoolean\":false}".getBytes(),
-                JacksonUtils.toJsonBytes(new TestOfAtomicObject())
+                a, b
         );
         Assert.assertArrayEquals("{\"date\":1626192000000}".getBytes(), JacksonUtils.toJsonBytes(new TestOfDate()));
         // only public
@@ -102,14 +106,17 @@ public class JacksonUtilsTest {
                 JacksonUtils.toJsonBytes(new TestOfAccessModifier())
         );
         // getter is also recognized
+        a = "{\"value\":\"value\",\"key\":\"key\"}".getBytes();
+        b = JacksonUtils.toJsonBytes(new TestOfGetter());
+        Arrays.sort(a);
+        Arrays.sort(b);
         Assert.assertArrayEquals(
-                "{\"value\":\"value\",\"key\":\"key\"}".getBytes(),
-                JacksonUtils.toJsonBytes(new TestOfGetter())
+                a, b
         );
         // annotation available
         Assert.assertArrayEquals(
-                ("{\"@type\":\"JacksonUtilsTest$TestOfAnnotationSub\",\"date\":\"2021-07-14\",\"subField\":\"subField\"," 
-                        + "\"camelCase\":\"value\"}").getBytes(), 
+                ("{\"@type\":\"JacksonUtilsTest$TestOfAnnotationSub\",\"date\":\"2021-07-14\",\"subField\":\"subField\","
+                        + "\"camelCase\":\"value\"}").getBytes(),
                 JacksonUtils.toJsonBytes(new TestOfAnnotationSub())
         );
     }
